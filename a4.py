@@ -9,49 +9,68 @@ class TTTBoard:
         board - a list of '*'s, 'X's & 'O's. 'X's represent moves by player 'X', 'O's
             represent moves by player 'O' and '*'s are spots no one has yet played on
     """
-    def __init__(self) -> None:
-        self.board = ['*']* 9
+
+    def __init__(self, b = ["*", "*", "*", "*", "*", "*", "*", "*", "*", "*"]) -> None:
+        self.board = b
     
     def __str__(self) -> str:
-        s = ""
+        board = self.board
+        brd = ""
         for x in [0, 3, 6]:
-            s += self.board[x + 0] +  " " + self.board[x + 1] + " " + self.board[x + 2] + "\n"
-        return s
+            brd += board[x + 0] + " " + board[x + 1] + " " + board[x + 2] + "\n"
+        return brd
     
-    def make_move(self, player, pos) -> bool:
-        """Make a move for player at pos"""
-        # Check if it is a valid move
-        if pos > 8 or pos < 0 or self.board[pos] != '*':
-            return False
+    def make_move(self, player, pos):
+        if self.board[pos] == "*":
+            self.board[pos] = player
+            return True
+        return False
+    
+    def has_won(self, player):
+        b = self.board
+
+        #checks rows
+        if b[0] == b[1] == b[2] == player:
+            return True
         
-        # if it is, then make the move
-        self.board[pos] = player
+        if b[3] == b[4] == b[5] == player:
+            return True
+        
+        if b[6] == b[7] == b[8] == player:
+            return True
+        
+        #checks columns
+        if b[0] == b[3] == b[6] == player:
+            return True
+        
+        if b[1] == b[4] == b[7] == player:
+            return True
+        
+        if b[2] == b[5] == b[8] == player:
+            return True
+        
+        #checks diagonals
+        if b[0] == b[4] == b[8] == player:
+            return True
+        
+        if b[2] == b[4] == b[6] == player:
+            return True
+        
+        return False
+
+    def game_over(self, ):
+        b = self.board
+
+        if self.has_won("X") or self.has_won("O"):
+            return True
+        
+        for x in b:
+            if x in "*":
+                return False
+        
         return True
-
-    def has_won(self, player) -> bool:
-        """Check if the given player has won the game"""
-        ps = [player] * 3 # either ['x', 'x', 'x'] or ['o', 'o', 'o']
-        # Check horizontal
-        if self.board[:3] == ps or self.board[3:6] == ps or self.board[6:] == ps:
-            return True
-        # Check Vertical
-        if self.board[::3] == ps or self.board[1::3] == ps or self.board[2::3] == ps:
-            return True
-        # Check Diagonal
-        if self.board[::4] == ps or self.board[2:7:2] == ps:
-            return True
-        
-        return False
-
-    def game_over(self) -> bool:
-        """Check if the game is over, either because someone has won or if 
-        the board is full"""
-        if self.has_won("X") or self.has_won("O") or "*" not in self.board:
-            return True
-        return False
     
-    def clear(self) -> None:
-        """Clear the board to reset the game"""
+    def clear(self):
         self.board = ["*"] * 9
 
 def play_tic_tac_toe() -> None:
@@ -101,30 +120,36 @@ if __name__ == "__main__":
     # here are some tests. These are not at all exhaustive tests. You will DEFINITELY
     # need to write some more tests to make sure that your TTTBoard class is behaving
     # properly.
+
     brd = TTTBoard()
-    print(brd.board)
     print(brd)
+
     brd.make_move("X", 8)
     brd.make_move("O", 7)
-    print(brd)
-    print(brd.has_won("X"))
+
     assert brd.game_over() == False
 
     brd.make_move("X", 5)
     brd.make_move("O", 6)
     brd.make_move("X", 2)
+
     print(brd)
+
     assert brd.has_won("X") == True
     assert brd.has_won("O") == False
     assert brd.game_over() == True
 
     brd.clear()
 
+    print(brd)
+
     assert brd.game_over() == False
 
     brd.make_move("O", 3)
     brd.make_move("O", 4)
     brd.make_move("O", 5)
+
+    print(brd)
 
     assert brd.has_won("X") == False
     assert brd.has_won("O") == True
